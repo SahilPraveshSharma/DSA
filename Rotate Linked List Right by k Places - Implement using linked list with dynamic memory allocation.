@@ -1,0 +1,81 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+};
+
+int main() {
+    int n;
+    cin >> n;
+
+    Node* head = NULL;
+    Node* temp = NULL;
+
+    for(int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+
+        Node* newNode = new Node();
+        newNode->data = x;
+        newNode->next = NULL;
+
+        if(head == NULL) {
+            head = newNode;
+            temp = head;
+        } else {
+            temp->next = newNode;
+            temp = newNode;
+        }
+    }
+
+    int k;
+    cin >> k;
+
+    if(head == NULL || head->next == NULL) {
+        Node* curr = head;
+        while(curr) {
+            cout << curr->data << " ";
+            curr = curr->next;
+        }
+        return 0;
+    }
+
+    int len = 1;
+    Node* tail = head;
+    while(tail->next != NULL) {
+        tail = tail->next;
+        len++;
+    }
+
+    k = k % len;
+    if(k == 0) {
+        Node* curr = head;
+        while(curr) {
+            cout << curr->data << " ";
+            curr = curr->next;
+        }
+        return 0;
+    }
+
+    tail->next = head;
+
+    int steps = len - k;
+    Node* newTail = head;
+
+    for(int i = 1; i < steps; i++) {
+        newTail = newTail->next;
+    }
+
+    Node* newHead = newTail->next;
+    newTail->next = NULL;
+
+    Node* curr = newHead;
+    while(curr != NULL) {
+        cout << curr->data << " ";
+        curr = curr->next;
+    }
+
+    return 0;
+}
