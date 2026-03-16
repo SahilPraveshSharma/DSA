@@ -1,0 +1,139 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+};
+
+struct Node *front = NULL, *rear = NULL;
+int count = 0;
+
+void push_front(int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->prev = NULL;
+    newNode->next = front;
+
+    if (front != NULL)
+        front->prev = newNode;
+    else
+        rear = newNode;
+
+    front = newNode;
+    count++;
+}
+
+void push_back(int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    newNode->prev = rear;
+
+    if (rear != NULL)
+        rear->next = newNode;
+    else
+        front = newNode;
+
+    rear = newNode;
+    count++;
+}
+
+void pop_front() {
+    if (front == NULL) return;
+
+    struct Node* temp = front;
+    front = front->next;
+
+    if (front != NULL)
+        front->prev = NULL;
+    else
+        rear = NULL;
+
+    free(temp);
+    count--;
+}
+
+void pop_back() {
+    if (rear == NULL) return;
+
+    struct Node* temp = rear;
+    rear = rear->prev;
+
+    if (rear != NULL)
+        rear->next = NULL;
+    else
+        front = NULL;
+
+    free(temp);
+    count--;
+}
+
+int getFront() {
+    if (front == NULL) return -1;
+    return front->data;
+}
+
+int getBack() {
+    if (rear == NULL) return -1;
+    return rear->data;
+}
+
+int empty() {
+    return (front == NULL);
+}
+
+int size() {
+    return count;
+}
+
+void clearDeque() {
+    while(front != NULL)
+        pop_front();
+}
+
+void reverse() {
+    struct Node *temp = NULL, *curr = front;
+
+    while (curr != NULL) {
+        temp = curr->prev;
+        curr->prev = curr->next;
+        curr->next = temp;
+        curr = curr->prev;
+    }
+
+    if (temp != NULL)
+        front = temp->prev;
+
+    struct Node* swap = front;
+    front = rear;
+    rear = swap;
+}
+
+void display() {
+    struct Node* temp = front;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    push_back(10);
+    push_back(20);
+    push_front(5);
+    push_back(30);
+
+    printf("Front: %d\n", getFront());
+    printf("Back: %d\n", getBack());
+    printf("Size: %d\n", size());
+
+    pop_front();
+    pop_back();
+
+    display();
+
+    return 0;
+}
