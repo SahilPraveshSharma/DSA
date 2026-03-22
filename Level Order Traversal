@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct TreeNode {
+    int val;
+    struct TreeNode* left;
+    struct TreeNode* right;
+};
+
+struct TreeNode* createNode(int val) {
+    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    node->val = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+struct QueueNode {
+    struct TreeNode* treeNode;
+    struct QueueNode* next;
+};
+
+struct Queue {
+    struct QueueNode *front, *rear;
+};
+
+struct Queue* createQueue() {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    q->front = q->rear = NULL;
+    return q;
+}
+
+void enqueue(struct Queue* q, struct TreeNode* node) {
+    struct QueueNode* temp = (struct QueueNode*)malloc(sizeof(struct QueueNode));
+    temp->treeNode = node;
+    temp->next = NULL;
+
+    if (q->rear == NULL) {
+        q->front = q->rear = temp;
+        return;
+    }
+
+    q->rear->next = temp;
+    q->rear = temp;
+}
+
+struct TreeNode* dequeue(struct Queue* q) {
+    if (q->front == NULL)
+        return NULL;
+
+    struct QueueNode* temp = q->front;
+    struct TreeNode* node = temp->treeNode;
+
+    q->front = q->front->next;
+
+    if (q->front == NULL)
+        q->rear = NULL;
+
+    free(temp);
+    return node;
+}
+
+int isEmpty(struct Queue* q) {
+    return q->front == NULL;
+}
+
+void levelOrder(struct TreeNode* root) {
+    if (root == NULL)
+        return;
+
+    struct Queue* q = createQueue();
+    enqueue(q, root);
+
+    while (!isEmpty(q)) {
+        int size = 0;
+
+        struct QueueNode* temp = q->front;
+        while (temp) {
+            size++;
+            temp = temp->next;
+        }
+
+        for (int i = 0; i < size; i++) {
+            struct TreeNode* node = dequeue(q);
+            printf("%d ", node->val);
+
+            if (node->left)
+                enqueue(q, node->left);
+            if (node->right)
+                enqueue(q, node->right);
+        }
+
+        printf("\n"); // New line for next level
+    }
+}
+
+int main() {
+    struct TreeNode* root = createNode(1);
+    root->left = createNode(2);
+    root->right = createNode(3);
+    root->right->left = createNode(4);
+    root->right->right = createNode(5);
+
+    printf("Level Order Traversal:\n");
+    levelOrder(root);
+
+    return 0;
+}
